@@ -1,0 +1,1 @@
+https://towardsdatascience.com/basic-curve-fitting-of-scientific-data-with-python-9592244a2509
