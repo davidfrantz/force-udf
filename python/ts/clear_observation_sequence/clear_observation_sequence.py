@@ -6,33 +6,33 @@ from numba import jit, prange, set_num_threads
 >>> Copyright (C) 2021 Andreas Rabe
 """
 
-def forcepy_init(dates, sensors, bandNames):
+def forcepy_init(dates, sensors, bandnames):
     """
     dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
     sensors:   numpy.ndarray[nDates](str)
     bandnames: numpy.ndarray[nBands](str)
     """
 
-    assert len(bandNames) == 1
+    assert len(bandnames) == 1
     outBandNames = list()
     for date, sensor in zip(dates, sensors):
         datestamp = str(np.datetime64('1970-01-01') + np.timedelta64(date, 'D')).replace('-', '')
         for name in ['COS-1', 'COS0', 'COS+1', 'COS-1_DTIME', 'COS1_DTIME']:
-            outBandNames.append(f'{name}_{bandNames[0]}_{datestamp}_{sensor}')
+            outBandNames.append(f'{name}_{bandnames[0]}_{datestamp}_{sensor}')
     return outBandNames
 
 
 @jit(nopython=True, nogil=True, parallel=True)
 def forcepy_block(inblock, outblock, dates, sensors, bandnames, nodata, nproc):
     """
-    inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16)
-    outarray:  numpy.ndarray[nOutBands](Int16) initialized with no data values
+    inblock:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16)
+    outblock:  numpy.ndarray[nOutBands, nrows, ncols](Int16) initialized with no data values
     dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
     sensors:   numpy.ndarray[nDates](str)
     bandnames: numpy.ndarray[nBands](str)
     nodata:    int
-    nproc:     number of allowed processes/threads (always 1)
-    Write results into outarray.
+    nproc:     number of allowed processes/threads
+    Write results into outblock.
     """
 
     set_num_threads(nproc)

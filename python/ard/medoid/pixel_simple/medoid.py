@@ -18,7 +18,7 @@ def forcepy_init(dates, sensors, bandnames):
 
 def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
     """
-    inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16)
+    inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16), nrows & ncols always 1
     outarray:  numpy.ndarray[nOutBands](Int16) initialized with no data values
     dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
     sensors:   numpy.ndarray[nDates](str)
