@@ -12,10 +12,6 @@ def forcepy_init(dates, sensors, bandnames):
     sensors:   numpy.ndarray[nDates](str)
     bandnames: numpy.ndarray[nBands](str)
     """
-    
-    print(dates)
-    print(sensors)
-    print(bandnames)
 
     return bandnames
 
