@@ -1,12 +1,33 @@
 import numpy as np
 from numba import jit, prange, set_num_threads
 
+"""
+>>> Medoid
+>>> Copyright (C) 2021 Andreas Rabe
+"""
+
 def forcepy_init(dates, sensors, bandNames):
+    """
+    dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
+    sensors:   numpy.ndarray[nDates](str)
+    bandnames: numpy.ndarray[nBands](str)
+    """
+
     return bandNames
+
 
 @jit(nopython=True, nogil=True, parallel=True)
 def forcepy_block(inblock, outblock, dates, sensors, bandnames, nodata, nproc):
-    """Calculate medoid."""
+    """
+    inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16)
+    outarray:  numpy.ndarray[nOutBands](Int16) initialized with no data values
+    dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
+    sensors:   numpy.ndarray[nDates](str)
+    bandnames: numpy.ndarray[nBands](str)
+    nodata:    int
+    nproc:     number of allowed processes/threads (always 1)
+    Write results into outarray.
+    """
 
     set_num_threads(nproc)
 
