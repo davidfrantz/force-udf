@@ -5,11 +5,11 @@ Copyright 2021, Andreas Rabe
 
 ## Run with
 
-program: ``force-higher-level``
-submodule: ``PLG``
-UDF type: ``PYTHON_TYPE = BLOCK``
-required parameters: ``none``
-required Python libraries: ``scipy, numba``
+- program: ``force-higher-level``
+- submodule: ``PLG``
+- UDF type: ``PYTHON_TYPE = BLOCK``
+- required parameters: ``none``
+- required Python libraries: ``scipy, numba``
 
 ## References
 
