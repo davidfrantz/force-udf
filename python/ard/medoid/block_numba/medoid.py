@@ -6,6 +6,7 @@ from numba import jit, prange, set_num_threads
 >>> Copyright (C) 2021 Andreas Rabe
 """
 
+
 def forcepy_init(dates, sensors, bandnames):
     """
     dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
@@ -16,9 +17,26 @@ def forcepy_init(dates, sensors, bandnames):
     return bandnames
 
 
+def forcepy_block(inblock, outblock, dates, sensors, bandnames, nodata, nproc):
+    """
+    This is a wrapper that runs the actual UDF in a parallel process.
+    Maybe this solves a problem with Numba when calling the UDF from C.
+    """
+    from multiprocessing import Pool
+    pool = Pool(1)
+    result = pool.map(forcepy_block_2, [(inblock, outblock, dates, sensors, bandnames, nodata, nproc)])[0]
+    outblock[:] = result
+
+def forcepy_block_2(args):
+    """
+    We need this extra wrapper, because we can not call a @jit function directly with Pool.
+    """
+    inblock, outblock, dates, sensors, bandnames, nodata, nproc = args
+    forcepy_block_3(inblock, outblock, dates, sensors, bandnames, nodata, nproc)
+    return outblock
 
 @jit(nopython=True, nogil=True, parallel=True)
-def forcepy_block(inblock, outblock, dates, sensors, bandnames, nodata, nproc):
+def forcepy_block_3(inblock, outblock, dates, sensors, bandnames, nodata, nproc):
     """
     inblock:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16)
     outblock:  numpy.ndarray[nOutBands, nrows, ncols](Int16) initialized with no data values
@@ -29,13 +47,13 @@ def forcepy_block(inblock, outblock, dates, sensors, bandnames, nodata, nproc):
     nproc:     number of allowed processes/threads
     Write results into outblock.
     """
-
-    #set_num_threads(nproc)
+    set_num_threads(nproc)
 
     nDates, nBands, nY, nX = inblock.shape
     for iYX in prange(nY * nX):
         iX = iYX % nX
         iY = iYX // nX
+        #print(iX, iY)
         inarray = inblock[:, :, iY, iX]
         cumulativDistance = np.zeros(shape=(nDates,), dtype=np.float32)
         for i in range(nDates):
@@ -51,5 +69,3 @@ def forcepy_block(inblock, outblock, dates, sensors, bandnames, nodata, nproc):
         argMedoid = np.argmin(cumulativDistance)
         medoid = inarray[argMedoid, :]
         outblock[:, iY, iX] = medoid
-        #print("done in loop")
-    #print("done in UDF")
