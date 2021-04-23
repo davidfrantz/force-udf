@@ -127,3 +127,15 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+python/test_udf/BLU_TSS.tif
+python/test_udf/BLU_TSS.tif.aux.xml
+python/test_udf/GRN_TSS.tif
+python/test_udf/GRN_TSS.tif.aux.xml
+python/test_udf/NIR_TSS.tif
+python/test_udf/NIR_TSS.tif.aux.xml
+python/test_udf/RED_TSS.tif
+python/test_udf/RED_TSS.tif.aux.xml
+python/test_udf/SW1_TSS.tif
+python/test_udf/SW1_TSS.tif.aux.xml
+python/test_udf/SW2_TSS.tif
+python/test_udf/SW2_TSS.tif.aux.xml
