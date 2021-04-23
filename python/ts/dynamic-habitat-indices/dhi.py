@@ -1,6 +1,4 @@
 import numpy as np
-from scipy.spatial.distance import squareform, pdist
-## please check imports
 
 """
 >>> Dynamic Habitat Indices
@@ -14,9 +12,7 @@ def forcepy_init(dates, sensors, bandnames):
     bandnames: numpy.ndarray[nBands](str)
     """
 
-    return ("cum", "min", "var")
-# please check whether return is python-conform
-
+    return ['cumulative', 'minimum', 'variation']
 
 # this function will get interpolated VI as 4d array (bands == 1) for exactly one year
 # only three simple equations to be implemented: http://silvis.forest.wisc.edu/data/dhis/ (next to the image)
@@ -34,13 +30,16 @@ def forcepy_block(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
     Write results into outarray.
     """
 
-    inarray = inarray[:, :, 0, 0]
-    valid = np.where(inarray[:, 0] != nodata)[0]  # skip no data; just check first band
-    if len(valid) == 0:
-        return
-    pairwiseDistancesSparse = pdist(inarray[valid], 'euclidean')
-    pairwiseDistances = squareform(pairwiseDistancesSparse)
-    cumulativDistance = np.sum(pairwiseDistances, axis=0)
-    argMedoid = valid[np.argmin(cumulativDistance)]
-    medoid = inarray[argMedoid, :]
-    outarray[:] = medoid
+    # prepare data
+    inarray = inarray[:, 0].astype(np.float32)  # cast to float ...
+    inarray[inarray == nodata] = np.nan  # ... and inject NaN to enable np.nan*-functions
+
+    # calculate DHI
+    cumulative = np.nansum(inarray, axis=0)
+    minimum = np.nanmin(inarray, axis=0)
+    variation = np.nanstd(inarray, axis=0) / np.nanmean(inarray, axis=0)
+
+    # store results
+    for arr, outarr in zip([cumulative, minimum, variation], outarray):
+        valid = np.isfinite(arr)
+        outarr[valid] = arr[valid]
