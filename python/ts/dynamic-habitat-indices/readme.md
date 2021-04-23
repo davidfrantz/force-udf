@@ -8,7 +8,9 @@ Copyright 2021, Andreas Rabe
 - program: ``force-higher-level``
 - submodule: ``TSA``
 - UDF type: ``PYTHON_TYPE = BLOCK``
-- required parameters: ``INTERPOLATE = RBF``
+- required parameters: 
+  - ``INTERPOLATE = RBF``
+  - ``DATE_RANGE`` set to one(!) full year
 - required Python libraries: ``TBD``
 
 ## References
