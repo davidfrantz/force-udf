@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 """
 >>> Dynamic Habitat Indices
@@ -29,12 +30,17 @@ def forcepy_block(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
 
     # prepare data
     inarray = inarray[:, 0].astype(np.float32) # cast to float ...
-    inarray[inarray == nodata] = np.nan        # ... and inject NaN to enable np.nan*-functions
+    invalid = inarray == nodata
+    if np.all(invalid):
+        return
+    inarray[invalid] = np.nan        # ... and inject NaN to enable np.nan*-functions
 
     # calculate DHI
-    cumulative = np.nansum(inarray, axis=0) / 1e2
-    minimum    = np.nanmin(inarray, axis=0)
-    variation  = np.nanstd(inarray, axis=0) / np.nanmean(inarray, axis=0) * 1e4
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        cumulative = np.nansum(inarray, axis=0) / 1e2
+        minimum    = np.nanmin(inarray, axis=0)
+        variation  = np.nanstd(inarray, axis=0) / np.nanmean(inarray, axis=0) * 1e4
 
     # store results
     for arr, outarr in zip([cumulative, minimum, variation], outarray):
