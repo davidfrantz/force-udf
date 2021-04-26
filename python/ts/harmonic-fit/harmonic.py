@@ -10,12 +10,10 @@ from scipy.spatial.distance import squareform, pdist
 >>> Copyright (C) 2021 Andreas Rabe
 """
 
-step = 16  # days
+# some global config variables
 date_start = 14727  # days since epoch (1970-01-01)
-date_end = 15631  # days since epoch (1970-01-01)
-
-# is this allowed here?
-# timestep and start/end dates for the interpolation
+date_end   = 15631  # days since epoch (1970-01-01)
+step       = 16  # days
 
 def forcepy_init(dates, sensors, bandnames):
     """
@@ -29,13 +27,6 @@ def forcepy_init(dates, sensors, bandnames):
     return bandnames
 
 
-# bandnames should be interpolated dates according to config variables in the global scope
-
-
-# pixel function should compute a harmonic timeseries fit, 
-# predicted at interpolation dates according to config variables in the global scope
-# this code here is your medoid code
-# this function will get non-interpolated VI as 4d array (bands == 1) for multiple years
 def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
     """
     inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16), nrows & ncols always 1
@@ -50,7 +41,9 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
 
     # prepare dataset
     profile = inarray.flatten()
-    valid = profile != -9999
+    valid = profile != nodata
+    if len(valid) == 0:
+        return
     xtrain = dates[valid]
     ytrain = profile[valid]
 
