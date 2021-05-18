@@ -1,4 +1,7 @@
+import numpy as np
 # todo this is just a saved version - clean this up!
+from scipy.optimize import curve_fit
+from harmonic import objective
 
 def test():  # pure python test
     from matplotlib.pylab import plot, show
@@ -9,10 +12,6 @@ def test():  # pure python test
     valid = profile != -9999
     xtrain = dates[valid]
     ytrain = profile[valid]
-
-    # regressor
-    def objective(x, a, b):
-        return a * np.sin(2 * np.pi / 365 * x) + b
 
     # fit
     popt, _ = curve_fit(objective, xtrain, ytrain)
@@ -50,4 +49,4 @@ def test2():  # forcepy test
     show()
 
 if __name__ == '__main__':
-    test2()
+    test()
