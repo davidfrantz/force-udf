@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 """
 >>> Dynamic Habitat Indices
@@ -14,30 +15,32 @@ def forcepy_init(dates, sensors, bandnames):
 
     return ['cumulative', 'minimum', 'variation']
 
-# this function will get interpolated VI as 4d array (bands == 1) for exactly one year
-# only three simple equations to be implemented: http://silvis.forest.wisc.edu/data/dhis/ (next to the image)
-# give back array of 3 images
-# the code below is from your medoid function (pixel-based, attention, this here should be a block function)
+
 def forcepy_block(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
     """
-    inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16), nrows & ncols always 1
+    inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16)
     outarray:  numpy.ndarray[nOutBands](Int16) initialized with no data values
     dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
     sensors:   numpy.ndarray[nDates](str)
     bandnames: numpy.ndarray[nBands](str)
     nodata:    int
-    nproc:     number of allowed processes/threads (always 1)
+    nproc:     number of allowed processes/threads
     Write results into outarray.
     """
 
     # prepare data
-    inarray = inarray[:, 0].astype(np.float32)  # cast to float ...
-    inarray[inarray == nodata] = np.nan  # ... and inject NaN to enable np.nan*-functions
+    inarray = inarray[:, 0].astype(np.float32) # cast to float ...
+    invalid = inarray == nodata
+    if np.all(invalid):
+        return
+    inarray[invalid] = np.nan        # ... and inject NaN to enable np.nan*-functions
 
     # calculate DHI
-    cumulative = np.nansum(inarray, axis=0)
-    minimum = np.nanmin(inarray, axis=0)
-    variation = np.nanstd(inarray, axis=0) / np.nanmean(inarray, axis=0)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        cumulative = np.nansum(inarray, axis=0) / 1e2
+        minimum    = np.nanmin(inarray, axis=0)
+        variation  = np.nanstd(inarray, axis=0) / np.nanmean(inarray, axis=0) * 1e4
 
     # store results
     for arr, outarr in zip([cumulative, minimum, variation], outarray):
