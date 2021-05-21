@@ -9,8 +9,8 @@ from scipy.optimize import curve_fit
 """
 
 # some global config variables
-date_start = 14727  # days since epoch (1970-01-01)
-date_end = 15631  # days since epoch (1970-01-01)
+date_start = 16436  # days since epoch (1970-01-01)
+date_end   = 18627  # days since epoch (1970-01-01)
 step = 16  # days
 
 
@@ -21,9 +21,8 @@ def forcepy_init(dates, sensors, bandnames):
     bandnames: numpy.ndarray[nBands](str)
     """
 
-    bandnames = [(datetime(1970, 1, 1) + timedelta(days=days)).strftime('%Y-%m-%d') + ' sin-interpolation'
+    bandnames = [(datetime(1970, 1, 1) + timedelta(days=days)).strftime('%Y%m%d') + ' sin-interpolation'
                  for days in range(date_start, date_end, step)]
-    print(bandnames)
     return bandnames
 
 
@@ -43,7 +42,7 @@ def objective_full(x, a0, a1, b1, c1, a2, b2, a3, b3):
 
 
 # - choose which model to use
-objective = objective_advanced
+objective = objective_full
 
 
 def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
@@ -61,7 +60,7 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
     # prepare dataset
     profile = inarray.flatten()
     valid = profile != nodata
-    if len(valid) == 0:
+    if not np.any(valid):
         return
     xtrain = dates[valid]
     ytrain = profile[valid]
