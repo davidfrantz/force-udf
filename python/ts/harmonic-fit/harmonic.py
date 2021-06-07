@@ -27,7 +27,7 @@ def forcepy_init(dates, sensors, bandnames):
 
 
 # regressor
-# - define all three models from the paper
+# define all three models from the paper
 def objective_simple(x, a0, a1, b1, c1):
     return a0 + a1 * np.cos(2 * np.pi / 365 * x) + b1 * np.sin(2 * np.pi / 365 * x) + c1 * x
 
