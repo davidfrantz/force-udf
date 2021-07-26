@@ -4,7 +4,7 @@
 
 ![FORCE Logo](/images/force-udf.png)
 
-This repository collects *user-defined functions* (**UDF**) that can be plugged into [FORCE](https://github.com/davidfrantz/force) (needs FORCE v. 3.7, to be released **VERY** soon).
+This repository collects *user-defined functions* (**UDF**) that can be plugged into [FORCE](https://github.com/davidfrantz/force) (needs FORCE v. >= 3.7.0).
 
 **Everybody** is encouraged to push their UDFs to this repository, such that the community as a whole benefits and has access to a broad variety of workflows.
 
