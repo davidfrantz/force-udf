@@ -8,6 +8,8 @@ It was developed and tested for grasslands in Germany (see maps here: https://ow
 While the thresholds used to identify mowing events are derived from the time series itself, some parameters might be adjusted for your specific 
 use case. Details regarding the indivídual processing steps are described in the Schwieder et al. 2021 (open accesss).
 
+![mowing detection scheme](scheme.jfif)
+
 # Output
 The algorithm is pixel based. The output is a raster stack with 17 bands that contain:
 
