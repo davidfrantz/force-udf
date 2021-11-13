@@ -8,6 +8,30 @@ import numpy as np
 >>> Copyright (C) 2021 Marcel Schwieder and Max Wesemeyer
 """
 
+####################################################### user defined parameters ################################################
+# define the approximate length of grassland season in which you expect the main mowing activity; in decimal years = DOY / 365; 
+# make sure too include a temporal buffer --> here end of December
+GLstart = 0.2  # DOY 73
+GLend = 1  # DOY 365
+
+# define end of grassland season from which the standard deviation will derived; i.e. without temporal buffer
+GLendII = 0.85  # DOY
+
+# define the approximate length of the main vegetation season; i.e., time of the year in which you expect at least one peak
+PSstart = 0.33  # DOY 120
+PSend = 0.66  # DOY 240
+
+# adjust sensitivity of thresholds; i.e., width of gaussian function and number of positive evaluations needed
+GFstd = 0.02
+posEval = 40
+
+# define minimum distance between two consecutive mowing eventsin days
+clrwd = 15
+
+#################################################################################################################################
+
+
+
 
 def get_cso(x, y, nodata=-9999, verbose=False, SoS=2018.2, EOS=2018.85):
     # if no gap is found it will return 5 days as gap
@@ -102,12 +126,9 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
     if type == 'ConHull':
         validIndex = Y < 1
         Y = Y[validIndex]
-
-        # Y_Blu = Y_Blu[validIndex]
         X = X[validIndex]
         validIndex_2 = Y > 0
         Y = Y[validIndex_2]
-        # Y_Blu = Y_Blu[validIndex_2]
         X = X[validIndex_2]
 
         ##############################################
@@ -145,15 +166,11 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
 
         if np.nanmin(SoGLSdiff) < Season_min_frac:
             SoGLS = SoGLS[0] + 1
-        #    print(SoGLS)
 
         EoGLS = np.abs(X - Season_max_frac)
         EoGLS = np.where(EoGLS == np.nanmin(EoGLS))
 
-        # Y = np.asarray(Y[SoGLS[0][0]:EoGLS[0][0]])
-        # X = np.asarray(X[SoGLS[0][0]:EoGLS[0][0]])
         Y = np.asarray(Y[SoGLS[0]:EoGLS[0][0]])
-        # Y_Blu = np.asarray(Y_Blu[SoGLS[0]:EoGLS[0][0]])
         X = np.asarray(X[SoGLS[0]:EoGLS[0][0]])
 
         # calculate NDVI difference (t1) - (t-1)
@@ -274,10 +291,7 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
     # difference between polynom and values
     diff = np.abs(polyVal - Y)
     diff_sum = np.nansum(diff)
-    #diff_std = np.nanstd(diff)
     diff_mean = np.nanmean(diff)
-    #diff_med = np.nanmedian(diff)
-    #testVal = diff_sum * EVI_obs_pot
     testVal = diff_sum * EVI_obs_potII
 
     thresh = diff_mean
@@ -296,14 +310,12 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
         for evIndex, ev in enumerate(diff):
             ndvi_diff_check = False
             NDV_Check_list = [YDiff[evIndex]] * 100
-            # print(NDVIthresh_list)
             result = [a for a, b in zip(NDV_Check_list, NDVIthresh_list) if a < b]
 
             if len(result) >= posEval:
                 ndvi_diff_check = True
             else:
                 continue
-                #ndvi_diff_check = False
 
             eventDate = X[evIndex]
 
@@ -361,8 +373,6 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
                                 any_preced_lower = np.any(np.ediff1d(Y[time_mask]) > 0)
                                 # in case there is no increase in EVI values between two mowing events
                                 # "any_preced_lower" will be False
-                                # print('Any observation higher than preceding between DOY ', mowingDoy[-1], 'and ',
-                                #      int(doy), '?', any_preced_lower)
                                 #############################
                                 if any_preced_lower:
                                     dt = datetime(yr, 1, 1)
@@ -378,13 +388,9 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
 
     return mowingEvents, mowingDoy, diff_sum, EVI_obs, EVI_obs_pot, testVal
 
-# new version
+
 def forcepy_init(dates, sensors, bandnames):
-    """
-    dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
-    sensors:   numpy.ndarray[nDates](str)
-    bandnames: numpy.ndarray[nBands](str)
-    """
+
     bandnames = ['mowingEvents', 'max_gap_days', 'CSO_ABS', 'Data_Ratio',
                  'Mow_1', 'Mow_2', 'Mow_3', 'Mow_4', 'Mow_5', 'Mow_6', 'Mow_7', 'Mean', 'Median', 'SD', 'diff_sum',
                  'diff_sum_dataavail', 'Error']
@@ -398,37 +404,6 @@ def serial_date_to_string(srl_no):
 
 
 def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
-    """
-    inarray:   numpy.ndarray[nDates, nBands, nrows, ncols](Int16), nrows & ncols always 1
-    outarray:  numpy.ndarray[nOutBands](Int16) initialized with no data values
-    dates:     numpy.ndarray[nDates](int) days since epoch (1970-01-01)
-    sensors:   numpy.ndarray[nDates](str)
-    bandnames: numpy.ndarray[nBands](str)
-    nodata:    int
-    nproc:     number of allowed processes/threads (always 1)
-    Write results into outarray.
-    """
-    global GLstart, GLend, GLendII, PSstart, PSend, GFstd, posEval, clrwd
-
-    ################# user defined parameters #################
-    # define the approximate length of grassland season in which you expect the main mowing activity; in decimal years = DOY / 365; make sure too include a temporal buffer --> here end of December
-    GLstart = 0.2  # DOY 73
-    GLend = 1  # DOY 365
-
-    # define end of grassland season
-    GLendII = 0.85  # DOY
-
-    # define the approximate length of the main vegetation season; i.e., time of the year in which you expect at least one peak
-    PSstart = 0.33  # DOY 120
-    PSend = 0.66  # DOY 240
-
-    # adjust sensitivity of thresholds; i.e., width of gaussian function and number of positive evaluations needed
-    GFstd = 0.02
-    posEval = 40
-
-    # define minimum distance between two consecutive mowing eventsin days
-    clrwd = 15
-    ###########################################################
 
     np.seterr(all='ignore')
     ts = inarray.squeeze()
@@ -479,7 +454,6 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
                                                                                                            yr=yr,
                                                                                                            type='ConHull',                                                                                           nOrder=3,
                                                                                                            model='linear')
-            #print(mowingEvents)
 
             mowing_doy_out = [0] * 7
 
@@ -494,36 +468,10 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
                            mowing_doy_out[5], mowing_doy_out[6], mean, median, sd,
                            int(diff_sum * 100),
                            int(diff_sum_dataavail * 100), 0]
-            #print(outarray)
-
-            #return [int(len(mowingEvents)), int(max_gap_days), int(cso_abs), int(nodata_ratio * 100), mowing_doy_out[0],
-            #        mowing_doy_out[1], mowing_doy_out[2], mowing_doy_out[3], mowing_doy_out[4],
-            #        mowing_doy_out[5], mowing_doy_out[6], mean, median, sd, int(diff_sum * 100),
-            #       int(diff_sum_dataavail * 100), 0]
         except:
             print('ERROR')
             outarray[-1] = 1
 
 
 
-'''
-# test data set
-if __name__ == '__main__':
-    args = np.array([-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,997,-9999,-9999
-,1566,-9999,2242,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,-9999,3913,5102,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,4649,-9999,-9999,5352,-9999,-9999,4712,-9999,-9999,4291,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,2490,-9999,-9999,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,3550,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999] ),np.array([2018.013698630137, 2018.0191780821917, 2018.0191780821917, 2018.0684931506848, 2018.1013698630136, 2018.1205479452055, 2018.1260273972603, 2018.1698630136987, 2018.1698630136987, 2018.2109589041097, 2018.213698630137, 2018.2601598173517, 2018.2656392694064, 2018.2738584474887, 2018.2930365296804, 2018.2985159817351, 2018.3012557077625, 2018.3012557077625, 2018.3067351598174, 2018.3067351598174, 2018.3149543378995, 2018.3341324200912, 2018.3396118721462, 2018.3423515981735, 2018.345091324201, 2018.3478310502283, 2018.3505707762556, 2018.3560502283106, 2018.3615296803653, 2018.36700913242, 2018.3697488584476, 2018.3697488584476, 2018.3752283105023, 2018.380707762557, 2018.3889269406393, 2018.3889269406393, 2018.394406392694, 2018.394406392694, 2018.3971461187214, 2018.4026255707763, 2018.408105022831, 2018.4108447488584, 2018.4135844748857, 2018.4163242009133, 2018.4245433789954, 2018.4300228310503, 2018.4327625570777, 2018.4519406392694, 2018.4574200913241, 2018.4574200913241, 2018.462899543379, 2018.4848173515982, 2018.4902968036529, 2018.4930365296805, 2018.4985159817352, 2018.5012557077625, 2018.5122146118722, 2018.5259132420092, 2018.5259132420092, 2018.5341324200913, 2018.5396118721462, 2018.545091324201, 2018.545091324201, 2018.5478310502283, 2018.553310502283, 2018.5615296803653, 2018.5642694063927, 2018.56700913242, 2018.5697488584474, 2018.580707762557, 2018.586187214612, 2018.5889269406393, 2018.6163242009131, 2018.635502283105, 2018.6437214611872, 2018.649200913242, 2018.6546803652968, 2018.6574200913242, 2018.6574200913242, 2018.662899543379, 2018.6683789954338, 2018.676598173516, 2018.676598173516, 2018.6985159817352, 2018.7122146118722, 2018.731392694064, 2018.739611872146, 2018.745091324201, 2018.753310502283, 2018.7724885844748, 2018.7834474885844, 2018.7861872146118, 2018.794406392694, 2018.7998858447488, 2018.8053652968038, 2018.8190639269405, 2018.8218036529681, 2018.8520547945207, 2018.8712328767124, 2018.8739726027397, 2018.876712328767, 2018.876712328767, 2018.9013698630138, 2018.9232876712329, 2018.9397260273972, 2018.9424657534246]), -9999
-    #for i in range(1,len(args[0]),1):
-    #    print(args[1][i],  args[0][i],',')
-
-
-    result = forcepy_tsi(args)
-    print('Done:', result)
-
-#[1000, 2719, 3259, 7000, 6, 1000, -9999, -9999, 5000, 1840, -9999, -9999, 1300, 5000, 8000, 10000]
-'''
+# End
