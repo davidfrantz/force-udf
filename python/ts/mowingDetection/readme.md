@@ -35,6 +35,7 @@ It is recommended to not use the above und below noise filters (FORCE TSA), as t
 - submodule: ``TSA``
 - UDF type: ``PYTHON_TYPE = PIXEL``
 - required parameters: ``none``
+- suggested parameters: ``INTERPOLATE = NONE, BELOW_NOISE = 0, ABOVE_NOISE = 0``
 - required Python libraries: ``numpy, scipy``
 
 The following parameters might be changed in the mowingDetection.py UDF (search for the function: detectMow_S2_new):
