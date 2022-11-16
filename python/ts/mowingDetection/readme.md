@@ -45,4 +45,5 @@ The following parameters might be changed in the mowingDetection.py UDF (search 
 
 ## References
 
-- Schwieder, M., Wesemeyer, M., Frantz, D., Pfoch, K., Erasmi, S., Pickert, J., Nendel, C., Hostert, P.. (2021): **Mapping grassland mowing events across Germany based on combined Sentinel-2 and Landsat 8 time series**. *Remote Sensing of Environment X(XX)*, XXX-XXX; [XXX10.3390/rs5126481](https://doi.org/10.3390/XX)
+- Schwieder, M., Wesemeyer, M., Frantz, D., Pfoch, K., Erasmi, S., Pickert, J., Nendel, C., & Hostert, P. (2022). Mapping grassland mowing events across Germany based on combined Sentinel-2 and Landsat 8 time series. Remote Sensing of Environment, 269, 112795.
+
