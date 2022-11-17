@@ -46,7 +46,8 @@ The following parameters might be changed in the mowingDetection.py UDF (search 
 ## Visualization
 
 You can visualize the pixelwise results of the mowingDetection_UDF using the QGIS-Plugin Profile Analytics which comes with the installation of the EnMAP-Box Plugin.
-(For further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics)
+(For further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
+
 Please save a local copy of the UDF and make sure to set ``profileAnalytics = True`` in the main code. Additionally you need to set an environmental variable in QGIS
 following this example: Settings --> Options --> System --> Environment: Apply: Append | Variable: PYTHONPATH | Value: PATH\TO\mowingDetection_UDF.py
 Finally you need to download /force-udf/pyhton/ts/mowingDetection/visualize_mowingDetection_UDF.py and prompt to this file in the Profile Analytics GUI.
