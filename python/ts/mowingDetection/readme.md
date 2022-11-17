@@ -49,7 +49,10 @@ You can visualize the pixelwise results of the mowingDetection_UDF using the QGI
 (For further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
 
 Please save a local copy of the UDF and make sure to set ``profileAnalytics = True`` in the main code. Additionally you need to set an environmental variable in QGIS
-following this example: Settings --> Options --> System --> Environment: Apply: Append | Variable: PYTHONPATH | Value: PATH\TO\mowingDetection_UDF.py
+following this example: 
+
+Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = PATH\TO\mowingDetection_UDF.py``
+
 Finally you need to download /force-udf/pyhton/ts/mowingDetection/visualize_mowingDetection_UDF.py and prompt to this file in the Profile Analytics GUI.
 Choose a FORCE TSS output file (vegetation index of your choice) as raster input and set the x-axis to Date Time (decimal years) in the Profile Analytics GUI. Once you
 click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
