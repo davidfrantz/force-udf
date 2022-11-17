@@ -58,7 +58,7 @@ Choose a FORCE TSS output file (vegetation index of your choice) as raster input
 click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
 adjust parameters in the main code and directly investigate the impacts of your changes.
 
-![mowing detection scheme](profileAnalytics.jpg)
+![Profile Analytics scheme](profileAnalytics.JPG)
 
 ## References
 
