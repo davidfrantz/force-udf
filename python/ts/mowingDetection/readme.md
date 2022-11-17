@@ -58,6 +58,8 @@ Choose a FORCE TSS output file (vegetation index of your choice) as raster input
 click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
 adjust parameters in the main code and directly investigate the impacts of your changes.
 
+![mowing detection scheme](profileAnalytics.jpg)
+
 ## References
 
 - Schwieder, M., Wesemeyer, M., Frantz, D., Pfoch, K., Erasmi, S., Pickert, J., Nendel, C., & Hostert, P. (2022). Mapping grassland mowing events across Germany based on combined Sentinel-2 and Landsat 8 time series. Remote Sensing of Environment, 269, 112795.
