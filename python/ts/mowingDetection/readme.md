@@ -43,6 +43,24 @@ The following parameters might be changed in the mowingDetection.py UDF (search 
 - PSstart and PSend (defines the approximate length of the main vegetation season; i.e., time of the year in which you expect at least one peak)
 - GFstd and posEval (sensitivity of thresholds; i.e., width of gaussian function and number of positive evaluations)
 
+## Visualization
+
+You can visualize the pixelwise results of the mowingDetection_UDF using the QGIS-Plugin Profile Analytics which comes with the installation of the EnMAP-Box Plugin.
+(For further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
+
+Please save a local copy of the UDF and make sure to set ``profileAnalytics = True`` in the main code. Additionally you need to set an environmental variable in QGIS
+following this example: 
+
+Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = PATH\TO\mowingDetection_UDF.py``
+
+Finally you need to download /force-udf/pyhton/ts/mowingDetection/visualize_mowingDetection_UDF.py and prompt to this file in the Profile Analytics GUI.
+Choose a FORCE TSS output file (vegetation index of your choice) as raster input and set the x-axis to Date Time (decimal years) in the Profile Analytics GUI. Once you
+click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
+adjust parameters in the main code and directly investigate the impacts of your changes.
+
+![Profile Analytics scheme](profileAnalytics.JPG)
+
 ## References
 
-- Schwieder, M., Wesemeyer, M., Frantz, D., Pfoch, K., Erasmi, S., Pickert, J., Nendel, C., Hostert, P.. (2021): **Mapping grassland mowing events across Germany based on combined Sentinel-2 and Landsat 8 time series**. *Remote Sensing of Environment X(XX)*, XXX-XXX; [XXX10.3390/rs5126481](https://doi.org/10.3390/XX)
+- Schwieder, M., Wesemeyer, M., Frantz, D., Pfoch, K., Erasmi, S., Pickert, J., Nendel, C., & Hostert, P. (2022). Mapping grassland mowing events across Germany based on combined Sentinel-2 and Landsat 8 time series. Remote Sensing of Environment, 269, 112795.
+

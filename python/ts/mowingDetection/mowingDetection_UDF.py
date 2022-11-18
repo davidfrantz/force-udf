@@ -102,12 +102,9 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
     if type == 'ConHull':
         validIndex = Y < 1
         Y = Y[validIndex]
-
-        # Y_Blu = Y_Blu[validIndex]
         X = X[validIndex]
         validIndex_2 = Y > 0
         Y = Y[validIndex_2]
-        # Y_Blu = Y_Blu[validIndex_2]
         X = X[validIndex_2]
 
         ##############################################
@@ -145,15 +142,12 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
 
         if np.nanmin(SoGLSdiff) < Season_min_frac:
             SoGLS = SoGLS[0] + 1
-        #    print(SoGLS)
 
         EoGLS = np.abs(X - Season_max_frac)
         EoGLS = np.where(EoGLS == np.nanmin(EoGLS))
 
-        # Y = np.asarray(Y[SoGLS[0][0]:EoGLS[0][0]])
-        # X = np.asarray(X[SoGLS[0][0]:EoGLS[0][0]])
+
         Y = np.asarray(Y[SoGLS[0]:EoGLS[0][0]])
-        # Y_Blu = np.asarray(Y_Blu[SoGLS[0]:EoGLS[0][0]])
         X = np.asarray(X[SoGLS[0]:EoGLS[0][0]])
 
         # calculate NDVI difference (t1) - (t-1)
@@ -274,10 +268,7 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
     # difference between polynom and values
     diff = np.abs(polyVal - Y)
     diff_sum = np.nansum(diff)
-    #diff_std = np.nanstd(diff)
     diff_mean = np.nanmean(diff)
-    #diff_med = np.nanmedian(diff)
-    #testVal = diff_sum * EVI_obs_pot
     testVal = diff_sum * EVI_obs_potII
 
     thresh = diff_mean
@@ -375,8 +366,11 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
                                     i = i + 1
                     else:
                         None
-
-    return mowingEvents, mowingDoy, diff_sum, EVI_obs, EVI_obs_pot, testVal
+                        
+    if profileAnalytics:
+        return mowingEvents, mowingDoy, diff_sum, EVI_obs, EVI_obs_pot, testVal, Xarr, Yarr, X, polyVal
+    else:
+        return mowingEvents, mowingDoy, diff_sum, EVI_obs, EVI_obs_pot, testVal
 
 # new version
 def forcepy_init(dates, sensors, bandnames):
@@ -408,9 +402,16 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
     nproc:     number of allowed processes/threads (always 1)
     Write results into outarray.
     """
-    global GLstart, GLend, GLendII, PSstart, PSend, GFstd, posEval, clrwd
+    global GLstart, GLend, GLendII, PSstart, PSend, GFstd, posEval, clrwd, profileAnalytics
 
     ################# user defined parameters #################
+    # define if you want to run the UDF in FORCE or display the result of the algorithm per pixel using QGIS-Plugin Profile Analytics
+    # see details: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics
+    # make sure to append an environmental variable in QGIS following this example:
+    # Settings --> Options --> System --> Environment: Apply: Append | Variable: PYTHONPATH | Value: PATH\TO\mowingDetection_UDF.py
+    
+    profileAnalytics = False
+    
     # define the approximate length of grassland season in which you expect the main mowing activity; in decimal years = DOY / 365; make sure too include a temporal buffer --> here end of December
     GLstart = 0.2  # DOY 73
     GLend = 1  # DOY 365
@@ -434,8 +435,12 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
     ts = inarray.squeeze()
     dateList = []
 
-    for imgDate in dates:
-        dateList.append(serial_date_to_string(imgDate))
+    if profileAnalytics:
+        for imgDate in dates:
+            dateList.append(imgDate)
+    else:
+        for imgDate in dates:
+            dateList.append(serial_date_to_string(imgDate))
 
     date = np.array(dateList)
 
@@ -450,8 +455,11 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
         return
     else:
         try:
-            # x = date
-            x = np.array(list(map(toYearFraction, date)))
+            if profileAnalytics:
+                x = date
+            else:
+                x = np.array(list(map(toYearFraction, date)))
+            
             yr = int(str(x[0])[:4])
             #################################
             # get sd mean median
@@ -473,13 +481,15 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
             subsetter = np.where((Season_min_frac < x) & (x < Season_max_frac), True, False)
             X = x[subsetter]
             Y = ts[subsetter]
-
-            mowingEvents, mowingDoy, diff_sum, EVI_obs, EVI_obs_pot, diff_sum_dataavail = detectMow_S2_new(X, Y,
-                                                                                                           clearWd=clrwd,
-                                                                                                           yr=yr,
-                                                                                                           type='ConHull',                                                                                           nOrder=3,
-                                                                                                           model='linear')
-            #print(mowingEvents)
+            
+            if profileAnalytics:
+                mowingEvents, mowingDoy, diff_sum, EVI_obs, EVI_obs_pot, diff_sum_dataavail, xPeak, yPeak, xPol, yPol = detectMow_S2_new(
+                    X, Y, clearWd=clrwd, yr=yr, type='ConHull', nOrder=3, model='linear'
+                )
+            else:
+                mowingEvents, mowingDoy, diff_sum, EVI_obs, EVI_obs_pot, diff_sum_dataavail = detectMow_S2_new(
+                    X, Y, clearWd=clrwd, yr=yr, type='ConHull', nOrder=3, model='linear'
+                )
 
             mowing_doy_out = [0] * 7
 
@@ -494,14 +504,10 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
                            mowing_doy_out[5], mowing_doy_out[6], mean, median, sd,
                            int(diff_sum * 100),
                            int(diff_sum_dataavail * 100), 0]
-            #print(outarray)
-
-            #return [int(len(mowingEvents)), int(max_gap_days), int(cso_abs), int(nodata_ratio * 100), mowing_doy_out[0],
-            #        mowing_doy_out[1], mowing_doy_out[2], mowing_doy_out[3], mowing_doy_out[4],
-            #        mowing_doy_out[5], mowing_doy_out[6], mean, median, sd, int(diff_sum * 100),
-            #       int(diff_sum_dataavail * 100), 0]
+            if profileAnalytics:
+                return mowingEvents, mowing_doy_out, xPeak, yPeak, xPol, yPol            
         except:
-            print('ERROR')
+            #print('ERROR')
             outarray[-1] = 1
 
 
@@ -509,21 +515,21 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
 '''
 # test data set
 if __name__ == '__main__':
-    args = np.array([-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,997,-9999,-9999
-,1566,-9999,2242,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,-9999,3913,5102,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,4649,-9999,-9999,5352,-9999,-9999,4712,-9999,-9999,4291,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,2490,-9999,-9999,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,3550,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999
-,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999] ),np.array([2018.013698630137, 2018.0191780821917, 2018.0191780821917, 2018.0684931506848, 2018.1013698630136, 2018.1205479452055, 2018.1260273972603, 2018.1698630136987, 2018.1698630136987, 2018.2109589041097, 2018.213698630137, 2018.2601598173517, 2018.2656392694064, 2018.2738584474887, 2018.2930365296804, 2018.2985159817351, 2018.3012557077625, 2018.3012557077625, 2018.3067351598174, 2018.3067351598174, 2018.3149543378995, 2018.3341324200912, 2018.3396118721462, 2018.3423515981735, 2018.345091324201, 2018.3478310502283, 2018.3505707762556, 2018.3560502283106, 2018.3615296803653, 2018.36700913242, 2018.3697488584476, 2018.3697488584476, 2018.3752283105023, 2018.380707762557, 2018.3889269406393, 2018.3889269406393, 2018.394406392694, 2018.394406392694, 2018.3971461187214, 2018.4026255707763, 2018.408105022831, 2018.4108447488584, 2018.4135844748857, 2018.4163242009133, 2018.4245433789954, 2018.4300228310503, 2018.4327625570777, 2018.4519406392694, 2018.4574200913241, 2018.4574200913241, 2018.462899543379, 2018.4848173515982, 2018.4902968036529, 2018.4930365296805, 2018.4985159817352, 2018.5012557077625, 2018.5122146118722, 2018.5259132420092, 2018.5259132420092, 2018.5341324200913, 2018.5396118721462, 2018.545091324201, 2018.545091324201, 2018.5478310502283, 2018.553310502283, 2018.5615296803653, 2018.5642694063927, 2018.56700913242, 2018.5697488584474, 2018.580707762557, 2018.586187214612, 2018.5889269406393, 2018.6163242009131, 2018.635502283105, 2018.6437214611872, 2018.649200913242, 2018.6546803652968, 2018.6574200913242, 2018.6574200913242, 2018.662899543379, 2018.6683789954338, 2018.676598173516, 2018.676598173516, 2018.6985159817352, 2018.7122146118722, 2018.731392694064, 2018.739611872146, 2018.745091324201, 2018.753310502283, 2018.7724885844748, 2018.7834474885844, 2018.7861872146118, 2018.794406392694, 2018.7998858447488, 2018.8053652968038, 2018.8190639269405, 2018.8218036529681, 2018.8520547945207, 2018.8712328767124, 2018.8739726027397, 2018.876712328767, 2018.876712328767, 2018.9013698630138, 2018.9232876712329, 2018.9397260273972, 2018.9424657534246]), -9999
-    #for i in range(1,len(args[0]),1):
-    #    print(args[1][i],  args[0][i],',')
+    profileAnalytics = True
 
+    bandnames = forcepy_init(None, None, None)
+    sensors = None
 
-    result = forcepy_tsi(args)
+    text = '2021.0 7681.0, 2021.013698630137 7813.0, 2021.027397260274 7842.0, 2021.041095890411 7823.0, 2021.054794520548 7670.0, 2021.0684931506848 7567.0, 2021.0821917808219 7237.0, 2021.0958904109589 7237.0, 2021.109589041096 6993.0, 2021.123287671233 6916.0, 2021.13698630137 6863.0, 2021.150684931507 6853.0, 2021.164383561644 6937.0, 2021.1780821917807 7011.0, 2021.1917808219177 7022.0, 2021.2054794520548 7292.0, 2021.2191780821918 7541.0, 2021.2328767123288 7722.0, 2021.2465753424658 7667.0, 2021.2602739726028 7544.0, 2021.2739726027398 7145.0, 2021.2876712328766 7010.0, 2021.3013698630136 7457.0, 2021.3150684931506 7894.0, 2021.3287671232877 7927.0, 2021.3424657534247 7779.0, 2021.3561643835617 7655.0, 2021.3698630136987 7879.0, 2021.3835616438357 7926.0, 2021.3972602739725 8093.0, 2021.4109589041095 7964.0, 2021.4246575342465 7666.0, 2021.4383561643835 7035.0, 2021.4520547945206 7176.0, 2021.4657534246576 7406.0, 2021.4794520547946 7606.0, 2021.4931506849316 7740.0, 2021.5068493150684 7410.0, 2021.5205479452054 7269.0, 2021.5342465753424 7127.0, 2021.5479452054794 7101.0, 2021.5616438356165 7049.0, 2021.5753424657535 6826.0, 2021.5890410958905 6723.0, 2021.6027397260275 6510.0, 2021.6164383561643 6122.0, 2021.6301369863013 5919.0, 2021.6438356164383 6295.0, 2021.6575342465753 6443.0, 2021.6712328767123 7090.0, 2021.6849315068494 6990.0, 2021.6986301369864 6767.0, 2021.7123287671234 6507.0, 2021.7260273972602 6385.0, 2021.7397260273972 6284.0, 2021.7534246575342 6277.0, 2021.7671232876712 6243.0, 2021.7808219178082 6193.0, 2021.7945205479452 5828.0, 2021.8082191780823 5633.0, 2021.8219178082193 5479.0, 2021.835616438356 5426.0, 2021.849315068493 5425.0, 2021.86301369863 5554.0, 2021.876712328767 6390.0, 2021.890410958904 6638.0, 2021.9041095890411 6879.0, 2021.9178082191781 6934.0, 2021.9315068493152 7222.0, 2021.945205479452 7267.0, 2021.958904109589 7528.0, 2021.972602739726 7370.0, 2021.986301369863 7179.0'
+    text = '2018.035616438356 2983.0, 2018.0849315068492 3342.0, 2018.0986301369862 3106.0, 2018.1041095890412 3160.0, 2018.1178082191782 3011.0, 2018.1178082191782 -9999, 2018.13698630137 2731.0, 2018.145205479452 2857.0, 2018.1616438356164 2782.0, 2018.1671232876713 2572.0, 2018.2054794520548 -9999, 2018.2082191780821 2436.0, 2018.2246575342465 2881.0, 2018.227397260274 -9999, 2018.2493150684932 2825.0, 2018.2493150684932 2890.0, 2018.2630136986302 -9999, 2018.268493150685 3965.0, 2018.268493150685 3975.0, 2018.2904109589042 5382.0, 2018.2931506849316 5290.0, 2018.295890410959 5898.0, 2018.304109589041 -9999, 2018.317808219178 -9999, 2018.323287671233 7505.0, 2018.33698630137 7889.0, 2018.33698630137 8057.0, 2018.345205479452 8228.0, 2018.3506849315067 8488.0, 2018.3643835616438 9036.0, 2018.3780821917808 -9999, 2018.3808219178081 9042.0, 2018.386301369863 9182.0, 2018.3917808219178 -9999, 2018.4 -9999, 2018.4054794520548 9255.0, 2018.4136986301369 -9999, 2018.427397260274 8679.0, 2018.4328767123288 8533.0, 2018.441095890411 8628.0, 2018.495890410959 5672.0, 2018.5013698630137 -9999, 2018.5123287671233 5107.0, 2018.5287671232877 5261.0, 2018.531506849315 6430.0, 2018.5369863013698 6234.0, 2018.5424657534247 6375.0, 2018.5506849315068 -9999, 2018.5561643835617 -9999, 2018.5561643835617 -9999, 2018.5643835616438 6787.0, 2018.5698630136985 7416.0, 2018.5753424657535 7059.0, 2018.5780821917808 7079.0, 2018.5972602739726 7322.0, 2018.6 7888.0, 2018.6109589041096 -9999, 2018.6383561643836 7313.0, 2018.6657534246576 -9999, 2018.6739726027397 -9999, 2018.6794520547944 7208.0, 2018.6876712328767 5541.0, 2018.6876712328767 4451.0, 2018.7150684931507 6746.0, 2018.731506849315 7893.0, 2018.7616438356165 2303.0, 2018.7753424657535 3070.0, 2018.7753424657535 3107.0, 2018.7835616438356 3265.0, 2018.7890410958903 3461.0, 2018.8027397260273 3743.0, 2018.8301369863013 -9999, 2018.8438356164384 -9999, 2018.8794520547945 2259.0, 2018.9068493150685 2873.0, 2018.9068493150685 2686.0, 2018.9260273972602 2832.0, 2018.9260273972602 2874.0'
+    text = text.replace(', ', ' ').split(' ')
+    data = np.array(text, float).reshape(-1, 2)
+    dates = data[:, 0]
+    inarray = data[:, 1]
+
+    nodata = -9999
+    nproc = 1
+    outarray = np.ones(len(bandnames))
+    result = forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc)
     print('Done:', result)
-
-#[1000, 2719, 3259, 7000, 6, 1000, -9999, -9999, 5000, 1840, -9999, -9999, 1300, 5000, 8000, 10000]
 '''
