@@ -4,7 +4,9 @@ from profileanalyticsapp.profileanalyticsdockwidget import Profile
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from enmapboxprocessing.utils import Utils
-from FORCE_UFD_mowingDetection import *
+import mowingDetection_UDF
+importlib.reload(mowingDetection_UDF)
+from mowingDetection_UDF import *
 import numpy as np
 from typing import List
 
