@@ -6,7 +6,7 @@ Copyright 2021 Marcel Schwieder and Max Wesemeyer
 This algorithm was developed to estimate mowing events on grasslands from dense vegetation index time series derived from Sentinel-2 and Landsat data.
 It was developed and tested for grasslands in Germany (see maps here: https://ows.geo.hu-berlin.de/webviewer/mowing-detection/).
 While the thresholds used to identify mowing events are derived from the time series itself, some parameters might be adjusted for your specific 
-use case. Details regarding the indivídual processing steps are described in the Schwieder et al. 2021 (open accesss).
+use case. Details regarding the indivídual processing steps are described in the Schwieder et al., 2022 (open accesss).
 
 ![mowing detection scheme](scheme.jpg)
 
