@@ -45,18 +45,19 @@ The following parameters might be changed in the mowingDetection.py UDF (search 
 
 ## Visualization
 
-You can visualize the pixelwise results of the mowingDetection_UDF using the QGIS-Plugin Profile Analytics which comes with the installation of the EnMAP-Box Plugin.
-(For further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
+You can visualize the pixelwise results of the mowingDetection_UDF using the QGIS-Plugin Profile Analytics which comes with the installation of the EnMAP-Box Plugin 
+(implemented since v.3.12-alpha.2; tested in QGIS 3.26; for further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
 
 Please save a local copy of the UDF and make sure to set ``profileAnalytics = True`` in the main code. Additionally you need to set an environmental variable in QGIS
 following this example: 
 
-Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = PATH\TO\mowingDetection_UDF.py``
+Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = ;PATH\TO\mowingDetection_UDF.py``
+(Note: Make sure to set the correct separator for appended variables (before the defined path) according to your system; here ";")
 
 Finally you need to download /force-udf/pyhton/ts/mowingDetection/visualize_mowingDetection_UDF.py and prompt to this file in the Profile Analytics GUI.
 Choose a FORCE TSS output file (vegetation index of your choice) as raster input and set the x-axis to Date Time (decimal years) in the Profile Analytics GUI. Once you
 click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
-adjust parameters in the main code and directly investigate the impacts of your changes.
+adjust parameters in the main code and directly investigate the impacts of your changes. Printouts can be checked in the QGIS Python console.
 
 ![Profile Analytics scheme](profileAnalytics.JPG)
 
