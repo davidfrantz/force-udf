@@ -52,7 +52,7 @@ Please save a local copy of the UDF and make sure to set ``profileAnalytics = Tr
 following this example: 
 
 Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = ;PATH\TO\mowingDetection_UDF.py``
-(Note: Make sure to set the correct separator for appended variables (before the defined path) according to your system; here ";")
+ (Note: Make sure to set the correct separator for appended variables (before the defined path) according to your system; here ";")
 
 Finally you need to download /force-udf/pyhton/ts/mowingDetection/visualize_mowingDetection_UDF.py and prompt to this file in the Profile Analytics GUI.
 Choose a FORCE TSS output file (vegetation index of your choice) as raster input and set the x-axis to Date Time (decimal years) in the Profile Analytics GUI. Once you
