@@ -46,7 +46,7 @@ The following parameters might be changed in the mowingDetection.py UDF (search 
 ## Visualization
 
 You can visualize the pixelwise results of the mowingDetection_UDF using the QGIS-Plugin Profile Analytics which comes with the installation of the EnMAP-Box Plugin 
-(implemented since v.3.12-alpha.2; tested in QGIS 3.26; for further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
+(van der Linden et al., 2015; implemented since v.3.12-alpha.2; tested in QGIS 3.26; further details: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
 
 Please save a local copy of the UDF and make sure to set ``profileAnalytics = True`` in the main code. Additionally you need to set an environmental variable in QGIS
 following this example: 
@@ -64,4 +64,6 @@ adjust parameters in the main code and directly investigate the impacts of your 
 ## References
 
 - Schwieder, M., Wesemeyer, M., Frantz, D., Pfoch, K., Erasmi, S., Pickert, J., Nendel, C., & Hostert, P. (2022). Mapping grassland mowing events across Germany based on combined Sentinel-2 and Landsat 8 time series. Remote Sensing of Environment, 269, 112795.
+- van der Linden, S., Rabe, A., Held, M., Jakimow, B., Leitão, P.J., Okujeni, A., Schwieder, M., Suess, S., & Hostert, P. (2015). The EnMAP-Box—A Toolbox and Application Programming Interface for EnMAP Data Processing. Remote Sensing, 7, 11249-11266.
+
 
