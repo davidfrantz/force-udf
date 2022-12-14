@@ -6,7 +6,7 @@ Copyright 2021 Marcel Schwieder and Max Wesemeyer
 This algorithm was developed to estimate mowing events on grasslands from dense vegetation index time series derived from Sentinel-2 and Landsat data.
 It was developed and tested for grasslands in Germany (see maps here: https://ows.geo.hu-berlin.de/webviewer/mowing-detection/).
 While the thresholds used to identify mowing events are derived from the time series itself, some parameters might be adjusted for your specific 
-use case. Details regarding the indivídual processing steps are described in the Schwieder et al. 2021 (open accesss).
+use case. Details regarding the indivídual processing steps are described in the Schwieder et al., 2022 (open accesss).
 
 ![mowing detection scheme](scheme.jpg)
 
@@ -45,22 +45,25 @@ The following parameters might be changed in the mowingDetection.py UDF (search 
 
 ## Visualization
 
-You can visualize the pixelwise results of the mowingDetection_UDF using the QGIS-Plugin Profile Analytics which comes with the installation of the EnMAP-Box Plugin.
-(For further details see: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
+You can visualize the pixelwise results of the mowingDetection_UDF using the QGIS-Plugin Profile Analytics which comes with the installation of the EnMAP-Box Plugin 
+(van der Linden et al., 2015; implemented since v.3.12-alpha.2; tested in QGIS 3.26; further details: https://enmap-box.readthedocs.io/en/latest/usr_section/usr_manual/eo4q.html?highlight=profile#profile-analytics).
 
 Please save a local copy of the UDF and make sure to set ``profileAnalytics = True`` in the main code. Additionally you need to set an environmental variable in QGIS
 following this example: 
 
-Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = PATH\TO\mowingDetection_UDF.py``
+Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = ;PATH\TO\mowingDetection_UDF.py``
+(Note: Make sure to set the correct separator for appended variables (before the defined path) according to your system; here ";")
 
 Finally you need to download /force-udf/pyhton/ts/mowingDetection/visualize_mowingDetection_UDF.py and prompt to this file in the Profile Analytics GUI.
 Choose a FORCE TSS output file (vegetation index of your choice) as raster input and set the x-axis to Date Time (decimal years) in the Profile Analytics GUI. Once you
 click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
-adjust parameters in the main code and directly investigate the impacts of your changes.
+adjust parameters in the main code and directly investigate the impacts of your changes. Printouts can be checked in the QGIS Python console.
 
 ![Profile Analytics scheme](profileAnalytics.JPG)
 
 ## References
 
 - Schwieder, M., Wesemeyer, M., Frantz, D., Pfoch, K., Erasmi, S., Pickert, J., Nendel, C., & Hostert, P. (2022). Mapping grassland mowing events across Germany based on combined Sentinel-2 and Landsat 8 time series. Remote Sensing of Environment, 269, 112795.
+- van der Linden, S., Rabe, A., Held, M., Jakimow, B., Leitão, P.J., Okujeni, A., Schwieder, M., Suess, S., & Hostert, P. (2015). The EnMAP-Box—A Toolbox and Application Programming Interface for EnMAP Data Processing. Remote Sensing, 7, 11249-11266.
+
 
