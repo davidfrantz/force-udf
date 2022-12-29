@@ -140,15 +140,11 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
 
         SoGLS = np.where(SoGLSdiff == np.nanmin(SoGLSdiff))
 
-        if np.nanmin(SoGLSdiff) < Season_min_frac:
-            SoGLS = SoGLS[0] + 1
-
         EoGLS = np.abs(X - Season_max_frac)
         EoGLS = np.where(EoGLS == np.nanmin(EoGLS))
 
-
-        Y = np.asarray(Y[SoGLS[0]:EoGLS[0][0]])
-        X = np.asarray(X[SoGLS[0]:EoGLS[0][0]])
+        Y = np.asarray(Y[SoGLS[0][0]:EoGLS[0][0]])
+        X = np.asarray(X[SoGLS[0][0]:EoGLS[0][0]])
 
         # calculate NDVI difference (t1) - (t-1)
         yT1 = np.asarray(Y[1:])
