@@ -136,13 +136,11 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
 
         ##############################################
 
+        # filter time series to season (check if needed or a code legacy)
         SoGLSdiff = np.abs(X - Season_min_frac)
-
         SoGLS = np.where(SoGLSdiff == np.nanmin(SoGLSdiff))
-
         EoGLS = np.abs(X - Season_max_frac)
         EoGLS = np.where(EoGLS == np.nanmin(EoGLS))
-
         Y = np.asarray(Y[SoGLS[0][0]:EoGLS[0][0]])
         X = np.asarray(X[SoGLS[0][0]:EoGLS[0][0]])
 
