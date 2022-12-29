@@ -189,7 +189,10 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
         Y0 = np.min(Y0)
 
         if MoSIndex <= 2:
-            earlyPeak1 = np.nanmax(Y[0:MoSIndex])
+            if MoSIndex == 0:
+                earlyPeak1 = Y[0]
+            else:
+                earlyPeak1 = np.nanmax(Y[0:MoSIndex])
             earlyIndex1 = np.min(np.where(Y == earlyPeak1))
         else:
             searchInd = np.argwhere(X <= X[MoSIndex] - clearWd * 0.00273973)
