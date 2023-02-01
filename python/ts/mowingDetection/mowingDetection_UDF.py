@@ -136,19 +136,13 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
 
         ##############################################
 
+        # filter time series to season (check if needed or a code legacy)
         SoGLSdiff = np.abs(X - Season_min_frac)
-
         SoGLS = np.where(SoGLSdiff == np.nanmin(SoGLSdiff))
-
-        if np.nanmin(SoGLSdiff) < Season_min_frac:
-            SoGLS = SoGLS[0] + 1
-
         EoGLS = np.abs(X - Season_max_frac)
         EoGLS = np.where(EoGLS == np.nanmin(EoGLS))
-
-
-        Y = np.asarray(Y[SoGLS[0]:EoGLS[0][0]])
-        X = np.asarray(X[SoGLS[0]:EoGLS[0][0]])
+        Y = np.asarray(Y[SoGLS[0][0]:EoGLS[0][0]])
+        X = np.asarray(X[SoGLS[0][0]:EoGLS[0][0]])
 
         # calculate NDVI difference (t1) - (t-1)
         yT1 = np.asarray(Y[1:])
@@ -193,7 +187,10 @@ def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='line
         Y0 = np.min(Y0)
 
         if MoSIndex <= 2:
-            earlyPeak1 = np.nanmax(Y[0:MoSIndex])
+            if MoSIndex == 0:
+                earlyPeak1 = Y[0]
+            else:
+                earlyPeak1 = np.nanmax(Y[0:MoSIndex])
             earlyIndex1 = np.min(np.where(Y == earlyPeak1))
         else:
             searchInd = np.argwhere(X <= X[MoSIndex] - clearWd * 0.00273973)

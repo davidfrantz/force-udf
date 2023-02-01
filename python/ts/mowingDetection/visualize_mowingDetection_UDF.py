@@ -5,6 +5,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor
 from enmapboxprocessing.utils import Utils
 import mowingDetection_UDF
+import importlib
 importlib.reload(mowingDetection_UDF)
 from mowingDetection_UDF import *
 import numpy as np
