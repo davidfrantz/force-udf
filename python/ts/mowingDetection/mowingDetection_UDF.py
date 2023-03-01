@@ -2,6 +2,7 @@ from scipy import interpolate
 from datetime import datetime, timedelta
 import time
 import numpy as np
+import warnings
 
 """
 >>> Mowing detection
@@ -89,6 +90,7 @@ def toYearFraction(date):
 
 
 def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='linear'):
+    warnings.simplefilter('ignore')
     another_thrs = 0.15
 
     Y = np.asarray(ys)/10000
