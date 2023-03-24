@@ -432,27 +432,29 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
 
     np.seterr(all='ignore')
     ts = inarray.squeeze()
-    dateList = []
-
-    if profileAnalytics:
-        for imgDate in dates:
-            dateList.append(imgDate)
-    else:
-        for imgDate in dates:
-            dateList.append(serial_date_to_string(imgDate))
-
-    date = np.array(dateList)
-
+    
     nodata = nodata
 
     all_no_data = np.all(ts == nodata)
     all_zero = np.all(ts == 0)
-
+    
     if all_no_data:
         return
     elif all_zero:
         return
     else:
+    
+        dateList = []
+
+        if profileAnalytics:
+            for imgDate in dates:
+                dateList.append(imgDate)
+        else:
+            for imgDate in dates:
+                dateList.append(serial_date_to_string(imgDate))
+
+        date = np.array(dateList)
+    
         try:
             if profileAnalytics:
                 x = date
