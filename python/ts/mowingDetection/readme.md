@@ -59,7 +59,7 @@ Choose a FORCE TSS output file (vegetation index of your choice) as raster input
 click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
 adjust parameters in the main code and directly investigate the impacts of your changes. Printouts can be checked in the QGIS Python console.
 
-![Profile Analytics scheme](profileAnalytics.JPG)
+![Profile Analytics scheme].(https://github.com/davidfrantz/force-udf/blob/main/python/ts/mowingDetection/profileAnalytics.JPG).
 
 ## References
 
