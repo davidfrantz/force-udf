@@ -8,12 +8,13 @@ Copyright 2024, David Klehr
 - program: ``force-higher-level``
 - submodule: ``TSA``
 - DATE_RANGE: ``xxxx-07-01 yyyy-06-31``
+
 xxxx = three years before your target year
 yyyy = one year after your target year
 e.g. for target year 2022: 2019-07-01 2023-06-31
 - UDF type: ``RSTATS_TYPE = PIXEL``
 - required parameters:``none``
-- required R libraries: ``numpy, scipy``
+- required R libraries: ``none``
 
 ## References
 
