@@ -2,6 +2,7 @@ from scipy import interpolate
 from datetime import datetime, timedelta
 import time
 import numpy as np
+import warnings
 
 """
 >>> Mowing detection
@@ -89,6 +90,7 @@ def toYearFraction(date):
 
 
 def detectMow_S2_new(xs, ys,  clearWd, yr, type='ConHull', nOrder=3, model='linear'):
+    warnings.simplefilter('ignore')
     another_thrs = 0.15
 
     Y = np.asarray(ys)/10000
@@ -430,27 +432,29 @@ def forcepy_pixel(inarray, outarray, dates, sensors, bandnames, nodata, nproc):
 
     np.seterr(all='ignore')
     ts = inarray.squeeze()
-    dateList = []
-
-    if profileAnalytics:
-        for imgDate in dates:
-            dateList.append(imgDate)
-    else:
-        for imgDate in dates:
-            dateList.append(serial_date_to_string(imgDate))
-
-    date = np.array(dateList)
-
+    
     nodata = nodata
 
     all_no_data = np.all(ts == nodata)
     all_zero = np.all(ts == 0)
-
+    
     if all_no_data:
         return
     elif all_zero:
         return
     else:
+    
+        dateList = []
+
+        if profileAnalytics:
+            for imgDate in dates:
+                dateList.append(imgDate)
+        else:
+            for imgDate in dates:
+                dateList.append(serial_date_to_string(imgDate))
+
+        date = np.array(dateList)
+    
         try:
             if profileAnalytics:
                 x = date

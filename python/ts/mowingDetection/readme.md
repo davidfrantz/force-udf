@@ -51,7 +51,7 @@ You can visualize the pixelwise results of the mowingDetection_UDF using the QGI
 Please save a local copy of the UDF and make sure to set ``profileAnalytics = True`` in the main code. Additionally you need to set an environmental variable in QGIS
 following this example: 
 
-Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = ;PATH\TO\mowingDetection_UDF.py``
+Settings --> Options --> System --> Environment: ``Apply = Append`` | ``Variable = PYTHONPATH`` | ``Value = ;PATH\TO``
 (Note: Make sure to set the correct separator for appended variables (before the defined path) according to your system; here ";")
 
 Finally you need to download /force-udf/pyhton/ts/mowingDetection/visualize_mowingDetection_UDF.py and prompt to this file in the Profile Analytics GUI.
@@ -59,7 +59,9 @@ Choose a FORCE TSS output file (vegetation index of your choice) as raster input
 click a pixel with the "Select current location" tool the vegetation index time series will be visualized along with the results of the mowingDetection_UDF. You can now 
 adjust parameters in the main code and directly investigate the impacts of your changes. Printouts can be checked in the QGIS Python console.
 
-![Profile Analytics scheme](profileAnalytics.JPG)
+
+![Profile Analytics scheme](https://github.com/davidfrantz/force-udf/blob/main/python/ts/mowingDetection/profileAnalytics.JPG)
+
 
 ## References
 
