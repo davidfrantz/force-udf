@@ -22,6 +22,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           DATE_TIME=$(date +'%Y%m%d%H%M%S')
-          TAG_NAME="1.${DATE_TIME}
+          TAG_NAME="1.${DATE_TIME}"
           git tag "$TAG_NAME"
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} "$TAG_NAME"
