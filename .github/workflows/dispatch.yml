@@ -1,8 +1,9 @@
 name: dispatch to FORCE
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: [Git-Tag]
+    types: [completed]
 
 jobs:
   dispatch:
